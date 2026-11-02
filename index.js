@@ -62,6 +62,15 @@ app.post("/books",async (req,res)=>{
   res.send(result)
 })
 
+// update
+app.patch("/books/:id",async(req,res)=>{
+  const updateData = req.body;
+  const {id} = req.params;
+  const query = {_id: new ObjectId(id)};
+  const result = await booksCollection.updateOne(query,{$set:updateData})
+  res.send(result)
+})
+
 // http://localhost:8000/books
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
