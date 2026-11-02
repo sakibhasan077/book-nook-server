@@ -46,6 +46,13 @@ app.get("/books/:id",async(req,res)=>{
   res.send(result);
 })
 
+// get specific item by email
+app.get("/my-books/:email",async(req,res)=>{
+  const {email} = req.params;
+  const query = {userEmail: email};
+  const result = await booksCollection.find(query).toArray();
+  res.send(result);
+})
 
 //post books
 app.post("/books",async (req,res)=>{
