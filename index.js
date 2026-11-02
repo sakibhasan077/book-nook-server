@@ -71,6 +71,14 @@ app.patch("/books/:id",async(req,res)=>{
   res.send(result)
 })
 
+// Delete
+app.delete("/books/:id", async(req,res)=>{
+  const {id} = req.params;
+  const query = {_id: new ObjectId(id)};
+  const result = await booksCollection.deleteOne(query);
+  res.send(result)
+})
+
 // http://localhost:8000/books
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
