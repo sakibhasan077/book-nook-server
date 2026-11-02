@@ -25,13 +25,23 @@ const connectToMongoDB = async () =>{
 
 const connected = await connectToMongoDB();
 const db = connected.db("book-nook");
-const booksCollection = db.collections("books")
+const booksCollection = db.collection("books");
 
 
 app.get('/', (req, res) => {
   res.send('Home Route')
 })
 
+
+//post books
+app.post("/books",async (req,res)=>{
+  const bookData = req.body;
+  const result = await booksCollection.insertOne(bookData)
+  console.log(result);
+  res.send(result)
+})
+
+// http://localhost:8000/books
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
