@@ -32,6 +32,11 @@ app.get('/', (req, res) => {
   res.send('Home Route')
 })
 
+// get books
+app.get("/books",async(req,res)=>{
+  const result = await booksCollection.find({}).toArray()
+  res.send(result)
+})
 
 //post books
 app.post("/books",async (req,res)=>{
