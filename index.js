@@ -128,6 +128,13 @@ app.post("/borrows",async(req,res)=>{
     const result = await borrowCollection.insertOne(borrowData);
     res.send(result)
 })
+// specific data
+app.get("/my-borrows/:email",async(req,res)=>{
+  const {email} = req.params;
+  const query = {userEmail: email};
+  const result = await borrowCollection.find(query).toArray();
+  res.send(result);
+})
 // http://localhost:8000/books
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
