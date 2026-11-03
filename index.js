@@ -26,6 +26,7 @@ const connectToMongoDB = async () =>{
 const connected = await connectToMongoDB();
 const db = connected.db("book-nook");
 const booksCollection = db.collection("books");
+const borrowCollection = db.collection("borrows")
 
 
 app.get('/', (req, res) => {
@@ -79,6 +80,54 @@ app.delete("/books/:id", async(req,res)=>{
   res.send(result)
 })
 
+//Borrow Collection
+app.post("/borrows",async(req,res)=>{
+  const data = req.body;
+  const alreadyBorrowed = await borrowCollection.findOne({
+    bookId: data.bookId,
+    userEmail: data.userEmail
+  });
+  if (alreadyBorrowed) {
+      return res.status(400).send({
+        message: "You have already borrowed this book"
+      });
+  }
+  //  Find the book
+  const book = await booksCollection.findOne({
+    _id: new ObjectId(data.bookId)
+  });
+
+  // Check available copies
+  if (book.totalCopy <= 0) {
+    return res.status(400).send({
+      message: "No copies available"
+    });
+  }
+
+  //  Update available copies
+  await booksCollection.updateOne(
+    {
+      _id: new ObjectId(data.bookId)
+    },
+    {
+      $inc: { totalCopy: -1 }
+    }
+  );
+
+  // 1. Current date
+    const borrowDate = new Date();
+
+    // 2. Calculate return date (7 days later)
+    const returnDate = new Date(borrowDate);
+    returnDate.setDate(borrowDate.getDate() + 7);
+    const borrowData = {
+      ...data,
+      borrowDate: borrowDate.toLocaleDateString("en-CA"),
+      returnDate: returnDate.toLocaleDateString("en-CA")
+    }
+    const result = await borrowCollection.insertOne(borrowData);
+    res.send(result)
+})
 // http://localhost:8000/books
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
