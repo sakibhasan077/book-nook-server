@@ -135,6 +135,34 @@ app.get("/my-borrows/:email",async(req,res)=>{
   const result = await borrowCollection.find(query).toArray();
   res.send(result);
 })
+// Delete
+app.delete("/borrows/:bookId", async(req,res)=>{
+  const {bookId} = req.params;
+  const query = {bookId: bookId};
+  const bookQuery = {_id: new ObjectId(bookId)};
+
+  const book = await booksCollection.findOne(bookQuery);
+  if (!book) {
+    return res.status(404).send({
+      message: "Book not found"
+    });
+  }
+
+  const result = await borrowCollection.deleteOne(query);
+  if (result.deletedCount === 0) {
+    return res.status(404).send({
+      message: "Borrow record not found"
+    });
+  }
+
+  await booksCollection.updateOne(
+    bookQuery,
+    {
+      $inc: { totalCopy: 1 }
+    }
+  );
+  res.send(result)
+})
 // http://localhost:8000/books
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
