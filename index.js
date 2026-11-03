@@ -29,7 +29,7 @@ const booksCollection = db.collection("books");
 
 
 app.get('/', (req, res) => {
-  res.send('Home Route')
+  res.send({message: "Server is running"})
 })
 
 // get books
