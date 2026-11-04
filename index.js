@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 
 // get books
 app.get("/books",async(req,res)=>{
-  const result = await booksCollection.find({}).sort({createdAt: -1} ).toArray()
+  const result = await booksCollection.find({}).sort({createdAt: 1} ).toArray()
   res.send(result)
 })
 
